@@ -8,6 +8,7 @@ import numpy as np
 from datetime import datetime
 import threading
 import time
+import os
 import pandas as pd
 from serial_reader import SerialReader
 from logger import DataLogger
@@ -46,7 +47,7 @@ class TamperUI:
         ctk.set_appearance_mode(self.theme_mode)
         
         # Initialize components
-        self.reader = SerialReader(port="COM3", baudrate=9600, mock_mode=True)  # Use mock mode by default for demo
+        self.reader = SerialReader(port="COM3", baudrate=9600, mock_mode=False)
         self.logger = DataLogger("logs/tamper_log.csv")
         self.detector = TamperDetector()
         
@@ -265,6 +266,16 @@ class TamperUI:
             
         if window:
             window.destroy()
+
+        # Attempt to reconnect using the new settings
+        if not self.reader.mock_mode:
+            connected = self.reader.open_port()
+            if connected:
+                self.status_indicator.configure(text_color="#4CAF50")
+                self.status_label.configure(text=f"Connected {self.reader.port}")
+            else:
+                self.status_indicator.configure(text_color="gray")
+                self.status_label.configure(text="Disconnected")
             
     def refresh_data(self):
         """Manually refresh data from sensors"""
@@ -291,17 +302,19 @@ class TamperUI:
         header_controls = ctk.CTkFrame(header, fg_color="transparent")
         header_controls.pack(side="right", padx=20, pady=20)
         
-        # Theme toggle button
-        self.theme_btn = ctk.CTkButton(
+        # Removed theme toggle and start/stop buttons
+
+        # Settings button (to configure COM/threshold)
+        self.settings_btn = ctk.CTkButton(
             header_controls,
-            text="🌙 Dark",
-            command=self.toggle_theme,
-            width=80,
+            text="⚙️ Settings",
+            command=self.show_settings,
+            width=90,
             height=30,
             fg_color=COLORS["secondary"],
             hover_color="#6A1B9A"
         )
-        self.theme_btn.pack(side="left", padx=(0, 15))
+        self.settings_btn.pack(side="left", padx=(0, 10))
         
         # Status indicator with improved styling
         self.status_frame = ctk.CTkFrame(header_controls, fg_color="transparent")
@@ -326,31 +339,27 @@ class TamperUI:
         main_container = ctk.CTkFrame(self.root, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=15, pady=15)
         
-        # Left Panel - Current Readings & Controls with card-like appearance
-        left_panel = ctk.CTkFrame(main_container, width=350, fg_color=COLORS["card"], corner_radius=15)
-        left_panel.pack(side="left", fill="both", padx=(0, 15))
-        left_panel.pack_propagate(False)
+        # Single large panel for graphs
+        graphs_panel = ctk.CTkFrame(main_container, fg_color=COLORS["card"], corner_radius=15)
+        graphs_panel.pack(fill="both", expand=True)
         
-        # Right Panel - Graphs with card-like appearance
-        right_panel = ctk.CTkFrame(main_container, fg_color=COLORS["card"], corner_radius=15)
-        right_panel.pack(side="right", fill="both", expand=True)
-        
-        self.create_left_panel(left_panel)
-        self.create_right_panel(right_panel)
+        self.create_right_panel(graphs_panel)
         
         # Bottom Panel - Event Log & Statistics with card-like appearance
         bottom_container = ctk.CTkFrame(self.root, fg_color="transparent")
         bottom_container.pack(fill="both", expand=True, padx=15, pady=(0, 15))
         
-        # Split bottom panel into two cards
-        bottom_left = ctk.CTkFrame(bottom_container, fg_color=COLORS["card"], corner_radius=15)
-        bottom_left.pack(side="left", fill="both", expand=True, padx=(0, 7.5))
+        # Bottom panel contains only the Event Log
+        bottom_log = ctk.CTkFrame(bottom_container, fg_color=COLORS["card"], corner_radius=15)
+        bottom_log.pack(fill="both", expand=True)
         
-        bottom_right = ctk.CTkFrame(bottom_container, fg_color=COLORS["card"], corner_radius=15)
-        bottom_right.pack(side="right", fill="both", expand=True, padx=(7.5, 0))
-        
-        self.create_event_log_panel(bottom_left)
-        self.create_stats_panel(bottom_right)
+        self.create_event_log_panel(bottom_log)
+
+        # Auto-start monitoring so UI works without unused buttons
+        try:
+            self.start_monitoring()
+        except Exception:
+            pass
     
     def create_left_panel(self, parent):
         """Create left panel with current readings and controls"""
@@ -644,17 +653,27 @@ class TamperUI:
         tree_frame = ctk.CTkFrame(parent, fg_color="transparent")
         tree_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
-        # Configure treeview style
+        # Configure treeview style (use clam theme so headings render clearly)
         style = ttk.Style()
-        style.configure("Treeview", 
-                        background=COLORS["card"],
-                        foreground=COLORS["text"],
-                        fieldbackground=COLORS["card"],
-                        borderwidth=0)
-        style.configure("Treeview.Heading", 
-                        background=COLORS["card"], 
-                        foreground=COLORS["text"],
-                        borderwidth=1)
+        try:
+            style.theme_use('clam')
+        except Exception:
+            pass
+        style.configure(
+            "Treeview",
+            background=COLORS["card"],
+            foreground=COLORS["text"],
+            fieldbackground=COLORS["card"],
+            borderwidth=0
+        )
+        style.configure(
+            "Treeview.Heading",
+            background="#2A2A2A",
+            foreground=COLORS["text"],
+            borderwidth=1,
+            relief="flat",
+            font=("Segoe UI", 10, "bold")
+        )
         style.map('Treeview', background=[('selected', COLORS["primary"])])
         
         # Create scrollbar
@@ -688,7 +707,55 @@ class TamperUI:
         self.tree.column("Event", width=250)
         self.tree.column("Type", width=150)
         
+        # Tag styles for highlighting
+        self.tree.tag_configure('normal', background=COLORS["card"], foreground=COLORS["text"])  # normal rows
+        self.tree.tag_configure('warning', background="#5D4037", foreground="#FFE082")  # amber on brown
+        self.tree.tag_configure('critical', background="#8E24AA", foreground="#FFFFFF")  # purple with white text
         self.tree.pack(fill="both", expand=True)
+        
+        # Load existing log data from CSV
+        self.load_existing_logs()
+    
+    def load_existing_logs(self):
+        """Load existing log data from CSV file into the tree view"""
+        try:
+            import pandas as pd
+            if hasattr(self, 'logger') and hasattr(self.logger, 'filename'):
+                log_file = self.logger.filename
+                if os.path.exists(log_file):
+                    df = pd.read_csv(log_file)
+                    if len(df) > 0:
+                        # Get severity mapping from event types
+                        for idx, row in df.iterrows():
+                            timestamp = str(row.get('Timestamp', ''))
+                            voltage = f"{row.get('Voltage (V)', 0):.2f}"
+                            current = f"{row.get('Current (A)', 0):.2f}"
+                            power = f"{row.get('Power (W)', 0):.2f}"
+                            mag_field = f"{row.get('Magnetic Field (G)', 0):.2f}"
+                            event = str(row.get('Event', ''))
+                            event_type = str(row.get('Event Type', 'Normal'))
+                            
+                            # Determine severity/tag based on event type
+                            if event_type != "Normal":
+                                if "critical" in event.lower() or event_type in ["Magnetic Tamper", "Bypass Detected"]:
+                                    tag = 'critical'
+                                else:
+                                    tag = 'warning'
+                            else:
+                                tag = 'normal'
+                            
+                            self.tree.insert("", "end", values=(
+                                timestamp, voltage, current, power, mag_field,
+                                event[:40] + "..." if len(event) > 40 else event,
+                                event_type
+                            ), tags=(tag,))
+                        
+                        # Scroll to bottom to show most recent
+                        children = self.tree.get_children()
+                        if children:
+                            self.tree.see(children[-1])
+        except Exception as e:
+            print(f"Error loading existing logs: {e}")
     
     def create_stats_panel(self, parent):
         """Create statistics panel with data analysis"""
@@ -904,6 +971,7 @@ class TamperUI:
             
             # Add to event log tree if it exists
             if hasattr(self, 'tree'):
+                row_tags = (severity if event_type != "Normal" else 'normal',)
                 self.tree.insert("", "end", values=(
                     timestamp,
                     f"{data['voltage']:.2f}",
@@ -912,7 +980,7 @@ class TamperUI:
                     f"{data['magnetic_field']:.2f}",
                     event_message[:40] + "..." if len(event_message) > 40 else event_message,
                     event_type
-                ))
+                ), tags=row_tags)
                 
                 # Scroll to bottom (if there are items)
                 children = self.tree.get_children()
@@ -991,12 +1059,17 @@ class TamperUI:
             return
         
         self.running = True
-        self.start_btn.configure(state="disabled")
-        self.stop_btn.configure(state="normal")
+        if hasattr(self, 'start_btn'):
+            self.start_btn.configure(state="disabled")
+        if hasattr(self, 'stop_btn'):
+            self.stop_btn.configure(state="normal")
         self.status_indicator.configure(text_color="#4CAF50")
         self.status_label.configure(text="Monitoring...")
 
         def monitor_loop():
+            # Try opening serial if not already open
+            if not self.reader.mock_mode and (not self.reader.ser or not self.reader.ser.is_open):
+                self.reader.open_port()
             while self.running:
                 try:
                     data = self.reader.read_sensor_data()
@@ -1012,10 +1085,15 @@ class TamperUI:
     def stop_monitoring(self):
         """Stop data monitoring"""
         self.running = False
-        self.start_btn.configure(state="normal")
-        self.stop_btn.configure(state="disabled")
+        if hasattr(self, 'start_btn'):
+            self.start_btn.configure(state="normal")
+        if hasattr(self, 'stop_btn'):
+            self.stop_btn.configure(state="disabled")
         self.status_indicator.configure(text_color="gray")
         self.status_label.configure(text="Stopped")
+        # Ensure previous thread exits before allowing a new start
+        if hasattr(self, 'update_thread') and self.update_thread and self.update_thread.is_alive():
+            self.update_thread.join(timeout=1.0)
     
     def export_to_excel(self):
         """Export logged data to Excel"""

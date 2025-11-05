@@ -11,12 +11,32 @@ class SerialReader:
         
         if not mock_mode:
             try:
-                self.ser = serial.Serial(port, baudrate, timeout=1)
+                if isinstance(port, str) and (port.startswith('socket://') or port.startswith('loop://')):
+                    self.ser = serial.serial_for_url(port, timeout=1)
+                else:
+                    self.ser = serial.Serial(port, baudrate, timeout=1)
                 print(f"✅ Connected to {port} at {baudrate} baud")
             except Exception as e:
-                print(f"⚠️ Could not open serial port {port}. Running in mock mode:", e)
-                self.mock_mode = True
+                # Stay in real mode; do NOT switch to mock automatically
+                print(f"⚠️ Could not open serial port {port}. Will stay disconnected until connected: {e}")
+                self.mock_mode = False
                 self.ser = None
+
+    def open_port(self):
+        """Attempt to open the configured serial port."""
+        if self.ser and self.ser.is_open:
+            return True
+        try:
+            if isinstance(self.port, str) and (self.port.startswith('socket://') or self.port.startswith('loop://')):
+                self.ser = serial.serial_for_url(self.port, timeout=1)
+            else:
+                self.ser = serial.Serial(self.port, self.baudrate, timeout=1)
+            print(f"✅ Connected to {self.port} at {self.baudrate} baud")
+            return True
+        except Exception as e:
+            print(f"⚠️ Failed to connect to {self.port}: {e}")
+            self.ser = None
+            return False
     
     def read_sensor_data(self):
         """

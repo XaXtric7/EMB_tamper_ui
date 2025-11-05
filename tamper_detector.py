@@ -26,29 +26,34 @@ class TamperDetector:
         event_message = "Normal Operation"
         severity = "info"
         
-        # Check for magnetic tampering (external magnet)
+        # Check for magnetic tampering (external magnet) - highest priority
         if magnetic_field > self.magnetic_tamper_threshold:
             event_type = "Magnetic Tamper"
-            event_message = f"⚠️ Magnetic Interference Detected! Field: {magnetic_field:.2f} G"
+            event_message = f"WARNING: Magnetic Interference Detected! Field: {magnetic_field:.2f} G"
             severity = "critical"
+        
+        # Check for reverse connection (negative current) - detect before bypass check
+        elif current < -0.1:
+            event_type = "Reverse Flow"
+            event_message = f"WARNING: Reverse Power Flow Detected! Current: {current:.2f}A"
+            severity = "warning"
         
         # Check for meter bypass (voltage present but no current)
         elif voltage >= self.voltage_normal_min and current < self.current_min:
             event_type = "Bypass Detected"
-            event_message = f"⚠️ Possible Meter Bypass! Voltage: {voltage:.2f}V, Current: {current:.2f}A"
+            event_message = f"WARNING: Possible Meter Bypass! Voltage: {voltage:.2f}V, Current: {current:.2f}A"
             severity = "critical"
         
-        # Check for reverse connection (negative power flow - if applicable)
-        # This would require detecting power direction, which might need additional sensor
-        elif power < 0:
-            event_type = "Reverse Flow"
-            event_message = f"⚠️ Reverse Power Flow Detected!"
+        # Check for overload (high current)
+        elif current > 7.0:
+            event_type = "Overload Detected"
+            event_message = f"WARNING: High Current Detected! Current: {current:.2f}A"
             severity = "warning"
         
         # Check for voltage anomaly
         elif voltage < self.voltage_normal_min or voltage > self.voltage_normal_max:
             event_type = "Voltage Anomaly"
-            event_message = f"⚠️ Voltage Out of Range: {voltage:.2f}V"
+            event_message = f"WARNING: Voltage Out of Range: {voltage:.2f}V"
             severity = "warning"
         
         # Check for power mismatch (voltage and current don't align with expected consumption)

@@ -11,7 +11,7 @@ class DataLogger:
         
         # Initialize CSV with headers if it doesn't exist
         if not os.path.exists(filename):
-            with open(filename, "w", newline="") as f:
+            with open(filename, "w", newline="", encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerow([
                     "Timestamp", "Voltage (V)", "Current (A)", 
@@ -20,10 +20,12 @@ class DataLogger:
 
     def log(self, timestamp, voltage, current, power, magnetic_field, event, event_type="Normal"):
         """Log sensor data with tamper event information"""
-        with open(self.filename, "a", newline="") as f:
+        # Replace emoji characters with plain text to avoid encoding issues
+        safe_event = event.replace("⚠️", "WARNING:").replace("🔴", "").replace("🟡", "").replace("🟢", "")
+        with open(self.filename, "a", newline="", encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([
-                timestamp, voltage, current, power, magnetic_field, event, event_type
+                timestamp, voltage, current, power, magnetic_field, safe_event, event_type
             ])
     
     def export_to_excel(self, output_file=None):
