@@ -2,13 +2,14 @@ import serial
 import time
 import random
 
+
 class SerialReader:
-    def __init__(self, port="COM3", baudrate=9600, mock_mode=False):
+    def __init__(self, port="COM4", baudrate=9600, mock_mode=False):
         self.port = port
         self.baudrate = baudrate
         self.mock_mode = mock_mode
         self.ser = None
-        
+
         if not mock_mode:
             try:
                 if isinstance(port, str) and (port.startswith('socket://') or port.startswith('loop://')):
@@ -18,7 +19,8 @@ class SerialReader:
                 print(f"✅ Connected to {port} at {baudrate} baud")
             except Exception as e:
                 # Stay in real mode; do NOT switch to mock automatically
-                print(f"⚠️ Could not open serial port {port}. Will stay disconnected until connected: {e}")
+                print(
+                    f"⚠️ Could not open serial port {port}. Will stay disconnected until connected: {e}")
                 self.mock_mode = False
                 self.ser = None
 
@@ -37,7 +39,7 @@ class SerialReader:
             print(f"⚠️ Failed to connect to {self.port}: {e}")
             self.ser = None
             return False
-    
+
     def read_sensor_data(self):
         """
         Reads sensor data from serial port.
@@ -47,7 +49,7 @@ class SerialReader:
         if self.mock_mode:
             # Generate realistic mock data for demonstration
             return self._generate_mock_data()
-        
+
         if self.ser and self.ser.in_waiting:
             try:
                 line = self.ser.readline().decode().strip()
@@ -58,7 +60,7 @@ class SerialReader:
                         current = float(parts[1])
                         magnetic_field = float(parts[2])
                         power = voltage * current  # Calculate power
-                        
+
                         return {
                             'voltage': voltage,
                             'current': current,
@@ -69,15 +71,15 @@ class SerialReader:
             except Exception as e:
                 print(f"Error parsing data: {e}")
                 return None
-        
+
         return None
-    
+
     def _generate_mock_data(self):
         """Generate realistic mock sensor data for testing"""
         base_voltage = 230.0 + random.uniform(-2, 2)
         base_current = 0.8 + random.uniform(-0.2, 0.3)
         base_mag = 15 + random.uniform(-3, 3)
-        
+
         # Occasionally simulate tamper events
         if random.random() < 0.05:  # 5% chance of tamper
             if random.random() < 0.5:
@@ -86,7 +88,7 @@ class SerialReader:
             else:
                 # Bypass - current drops to near zero but voltage stays
                 base_current = 0.01 + random.uniform(-0.01, 0.02)
-        
+
         return {
             'voltage': round(base_voltage, 2),
             'current': round(base_current, 2),
@@ -94,7 +96,7 @@ class SerialReader:
             'power': round(base_voltage * base_current, 2),
             'timestamp': time.time()
         }
-    
+
     def close(self):
         """Close serial connection"""
         if self.ser and self.ser.is_open:
