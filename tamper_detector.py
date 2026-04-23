@@ -35,39 +35,39 @@ class TamperDetector:
         severity = "info"
 
         # --- 1. Magnetic tamper (external magnet) ---
-        if magnetic_field > self.magnetic_tamper_threshold:
+        if magnetic_field >= self.magnetic_tamper_threshold:
             event_type = "Magnetic Tamper"
-            event_message = f"⚠️ Magnetic Interference Detected! Field: {magnetic_field:.2f} G"
+            event_message = f"WARNING: Magnetic Interference Detected! Field: {magnetic_field:.2f} G"
             severity = "critical"
 
         # --- 2. Reverse current flow ---
         elif current < self.reverse_threshold:
             event_type = "Reverse Flow"
-            event_message = f"⚠️ Reverse Power Flow Detected! Current: {current:.2f} A"
+            event_message = f"WARNING: Reverse Power Flow Detected! Current: {current:.2f} A"
             severity = "warning"
 
         # --- 3. Bypass (no current, but voltage present) ---
         elif voltage >= 4.5 and current < self.current_min:
             event_type = "Bypass Detected"
-            event_message = f"⚠️ Possible Bypass! Voltage: {voltage:.2f} V, Current: {current:.2f} A"
+            event_message = f"WARNING: Possible Bypass! Voltage: {voltage:.2f} V, Current: {current:.2f} A"
             severity = "critical"
 
         # --- 4. Overload condition ---
         elif current > self.overload_threshold:
             event_type = "Overload Detected"
-            event_message = f"⚠️ High Current Draw Detected! Current: {current:.2f} A"
+            event_message = f"WARNING: High Current Draw Detected! Current: {current:.2f} A"
             severity = "warning"
 
         # --- 5. Voltage tamper (below 2.7 V) ---
         elif voltage < self.voltage_tamper_threshold:
             event_type = "Voltage Tamper"
-            event_message = f"⚠️ Critical Voltage Drop! Voltage: {voltage:.2f} V"
+            event_message = f"WARNING: Critical Voltage Drop! Voltage: {voltage:.2f} V"
             severity = "critical"
 
         # --- 6. Voltage anomaly (minor deviation) ---
         elif voltage < self.voltage_normal_min or voltage > self.voltage_normal_max:
             event_type = "Voltage Anomaly"
-            event_message = f"⚠️ Voltage Out of Normal Range: {voltage:.2f} V"
+            event_message = f"WARNING: Voltage Out of Normal Range: {voltage:.2f} V"
             severity = "warning"
 
         # --- 7. Power anomaly trend (historical deviation) ---
@@ -77,7 +77,7 @@ class TamperDetector:
             if avg_power > 0.1:  # avoid division by zero / noise
                 if abs(power - avg_power) > avg_power * 0.5 and power < avg_power * 0.3:
                     event_type = "Power Mismatch"
-                    event_message = f"⚠️ Unexpected Power Drop Detected!"
+                    event_message = f"WARNING: Unexpected Power Drop Detected!"
                     severity = "warning"
 
         # --- Update rolling history (keep last 50 readings) ---

@@ -960,3 +960,116 @@ Timestamp,Voltage (V),Current (A),Power (W),Magnetic Field (G),Event,Event Type
 2025-11-05 22:55:55,229.12,1.53,350.5536,13.25,Normal Operation,Normal
 2025-11-05 22:55:55,230.74,0.72,166.1328,15.2,Normal Operation,Normal
 2025-11-05 22:55:56,228.45,0.96,219.31199999999998,16.59,Normal Operation,Normal
+2026-04-23 19:54:06,5.06,-0.39,-1.973,16.32,WARNING: Reverse Power Flow Detected! Current: -0.39 A,Reverse Flow
+2026-04-23 19:54:06,5.05,0.66,3.333,19.09,Normal Operation,Normal
+2026-04-23 19:54:07,5.05,0.58,2.929,91.94,WARNING: Magnetic Interference Detected! Field: 91.94 G,Magnetic Tamper
+2026-04-23 19:54:08,5.08,0.67,3.404,12.16,Normal Operation,Normal
+2026-04-23 19:54:08,4.91,0.22,1.08,15.22,Normal Operation,Normal
+2026-04-23 19:54:09,2.51,0.23,0.577,15.87,WARNING: Critical Voltage Drop! Voltage: 2.51 V,Voltage Tamper
+2026-04-23 19:54:09,5.03,0.17,0.855,15.24,Normal Operation,Normal
+2026-04-23 19:54:10,5.17,0.22,1.137,18.8,Normal Operation,Normal
+2026-04-23 19:54:10,5.02,0.45,2.259,16.3,Normal Operation,Normal
+2026-04-23 19:54:11,4.98,0.44,2.191,15.92,Normal Operation,Normal
+2026-04-23 19:54:12,4.85,0.0,0.0,12.71,"WARNING: Possible Bypass! Voltage: 4.85 V, Current: 0.00 A",Bypass Detected
+2026-04-23 19:54:12,4.96,0.53,2.629,12.75,Normal Operation,Normal
+2026-04-23 19:54:13,5.06,-0.54,-2.732,11.44,WARNING: Reverse Power Flow Detected! Current: -0.54 A,Reverse Flow
+2026-04-23 19:54:13,5.2,0.34,1.768,16.57,Normal Operation,Normal
+2026-04-23 19:54:14,4.86,-0.51,-2.479,14.75,WARNING: Reverse Power Flow Detected! Current: -0.51 A,Reverse Flow
+2026-04-23 19:54:15,2.47,0.27,0.667,11.89,WARNING: Critical Voltage Drop! Voltage: 2.47 V,Voltage Tamper
+2026-04-23 19:54:15,5.09,0.26,1.323,14.15,Normal Operation,Normal
+2026-04-23 19:54:16,4.91,0.13,0.638,15.24,Normal Operation,Normal
+2026-04-23 19:54:16,5.06,0.47,2.378,16.82,Normal Operation,Normal
+2026-04-23 19:54:17,5.1,0.17,0.867,14.34,Normal Operation,Normal
+2026-04-23 19:54:18,4.81,0.33,1.587,15.8,Normal Operation,Normal
+2026-04-23 19:54:18,5.0,0.51,2.55,14.65,Normal Operation,Normal
+2026-04-23 19:54:19,5.08,0.56,2.845,11.83,Normal Operation,Normal
+2026-04-23 19:54:19,2.12,0.43,0.912,16.02,WARNING: Critical Voltage Drop! Voltage: 2.12 V,Voltage Tamper
+2026-04-23 19:54:20,5.1,0.29,1.479,13.56,Normal Operation,Normal
+2026-04-23 19:54:21,4.95,0.64,3.168,14.32,Normal Operation,Normal
+2026-04-23 19:54:21,5.15,0.39,2.009,17.53,Normal Operation,Normal
+2026-04-23 19:54:22,5.1,0.49,2.499,17.45,Normal Operation,Normal
+2026-04-23 19:54:22,4.82,0.5,2.41,68.47,WARNING: Magnetic Interference Detected! Field: 68.47 G,Magnetic Tamper
+2026-04-23 19:54:23,5.1,0.49,2.499,16.63,Normal Operation,Normal
+2026-04-23 19:54:24,5.05,0.46,2.323,13.18,Normal Operation,Normal
+2026-04-23 19:54:24,4.99,0.11,0.549,16.56,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:25,4.97,-0.28,-1.392,18.84,WARNING: Reverse Power Flow Detected! Current: -0.28 A,Reverse Flow
+2026-04-23 19:54:25,4.87,0.34,1.656,13.47,Normal Operation,Normal
+2026-04-23 19:54:26,5.13,0.67,3.437,91.18,WARNING: Magnetic Interference Detected! Field: 91.18 G,Magnetic Tamper
+2026-04-23 19:54:27,5.15,0.55,2.833,17.37,Normal Operation,Normal
+2026-04-23 19:54:27,2.24,0.36,0.806,15.71,WARNING: Critical Voltage Drop! Voltage: 2.24 V,Voltage Tamper
+2026-04-23 19:54:28,4.88,0.55,2.684,19.23,Normal Operation,Normal
+2026-04-23 19:54:28,4.84,0.69,3.34,16.74,Normal Operation,Normal
+2026-04-23 19:54:29,2.32,0.39,0.905,11.06,WARNING: Critical Voltage Drop! Voltage: 2.32 V,Voltage Tamper
+2026-04-23 19:54:30,5.02,0.45,2.259,13.46,Normal Operation,Normal
+2026-04-23 19:54:30,5.03,-0.81,-4.074,17.54,WARNING: Reverse Power Flow Detected! Current: -0.81 A,Reverse Flow
+2026-04-23 19:54:31,5.16,2.08,10.733,11.25,WARNING: High Current Draw Detected! Current: 2.08 A,Overload Detected
+2026-04-23 19:54:31,5.12,0.25,1.28,12.48,Normal Operation,Normal
+2026-04-23 19:54:32,5.07,0.32,1.622,11.1,Normal Operation,Normal
+2026-04-23 19:54:33,2.02,0.49,0.99,17.81,WARNING: Critical Voltage Drop! Voltage: 2.02 V,Voltage Tamper
+2026-04-23 19:54:33,5.05,0.69,3.484,14.52,Normal Operation,Normal
+2026-04-23 19:54:34,5.0,4.62,23.1,14.84,WARNING: High Current Draw Detected! Current: 4.62 A,Overload Detected
+2026-04-23 19:54:34,5.1,0.34,1.734,13.58,Normal Operation,Normal
+2026-04-23 19:54:35,4.82,0.52,2.506,12.47,Normal Operation,Normal
+2026-04-23 19:54:36,4.93,0.58,2.859,17.61,Normal Operation,Normal
+2026-04-23 19:54:36,4.93,0.34,1.676,17.82,Normal Operation,Normal
+2026-04-23 19:54:37,4.98,0.14,0.697,18.48,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:37,4.86,0.37,1.798,10.72,Normal Operation,Normal
+2026-04-23 19:54:38,4.89,0.24,1.174,11.56,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:38,5.16,0.33,1.703,67.7,WARNING: Magnetic Interference Detected! Field: 67.70 G,Magnetic Tamper
+2026-04-23 19:54:39,5.18,0.5,2.59,13.17,Normal Operation,Normal
+2026-04-23 19:54:40,5.11,0.52,2.657,13.62,Normal Operation,Normal
+2026-04-23 19:54:40,4.99,0.34,1.697,19.11,Normal Operation,Normal
+2026-04-23 19:54:41,5.08,0.4,2.032,16.2,Normal Operation,Normal
+2026-04-23 19:54:41,5.03,-0.98,-4.929,12.79,WARNING: Reverse Power Flow Detected! Current: -0.98 A,Reverse Flow
+2026-04-23 19:54:42,5.0,0.01,0.05,18.85,"WARNING: Possible Bypass! Voltage: 5.00 V, Current: 0.01 A",Bypass Detected
+2026-04-23 19:54:43,5.15,0.55,2.833,15.51,Normal Operation,Normal
+2026-04-23 19:54:43,5.12,0.28,1.434,82.63,WARNING: Magnetic Interference Detected! Field: 82.63 G,Magnetic Tamper
+2026-04-23 19:54:44,4.83,0.5,2.415,15.81,Normal Operation,Normal
+2026-04-23 19:54:44,5.19,2.68,13.909,10.42,WARNING: High Current Draw Detected! Current: 2.68 A,Overload Detected
+2026-04-23 19:54:45,5.18,0.01,0.052,17.4,"WARNING: Possible Bypass! Voltage: 5.18 V, Current: 0.01 A",Bypass Detected
+2026-04-23 19:54:45,4.82,4.7,22.654,18.25,WARNING: High Current Draw Detected! Current: 4.70 A,Overload Detected
+2026-04-23 19:54:46,4.9,0.42,2.058,19.5,Normal Operation,Normal
+2026-04-23 19:54:47,4.81,0.2,0.962,19.14,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:47,4.94,0.17,0.84,19.03,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:48,5.11,0.12,0.613,12.31,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:48,4.93,0.24,1.183,15.47,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:49,5.14,0.0,0.0,16.15,"WARNING: Possible Bypass! Voltage: 5.14 V, Current: 0.00 A",Bypass Detected
+2026-04-23 19:54:50,5.18,0.52,2.694,12.69,Normal Operation,Normal
+2026-04-23 19:54:50,4.89,0.66,3.227,15.1,Normal Operation,Normal
+2026-04-23 19:54:51,5.14,0.16,0.822,12.15,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:51,5.2,0.51,2.652,92.29,WARNING: Magnetic Interference Detected! Field: 92.29 G,Magnetic Tamper
+2026-04-23 19:54:52,5.08,0.56,2.845,18.87,Normal Operation,Normal
+2026-04-23 19:54:53,4.83,0.15,0.725,63.17,WARNING: Magnetic Interference Detected! Field: 63.17 G,Magnetic Tamper
+2026-04-23 19:54:53,4.96,-0.79,-3.918,12.76,WARNING: Reverse Power Flow Detected! Current: -0.79 A,Reverse Flow
+2026-04-23 19:54:54,5.1,3.18,16.218,16.09,WARNING: High Current Draw Detected! Current: 3.18 A,Overload Detected
+2026-04-23 19:54:54,4.96,0.35,1.736,14.43,Normal Operation,Normal
+2026-04-23 19:54:55,5.03,0.25,1.258,17.12,Normal Operation,Normal
+2026-04-23 19:54:56,4.94,3.12,15.413,10.16,WARNING: High Current Draw Detected! Current: 3.12 A,Overload Detected
+2026-04-23 19:54:56,5.05,0.14,0.707,13.19,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:57,4.86,0.19,0.923,17.76,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:54:57,5.1,0.5,2.55,18.16,Normal Operation,Normal
+2026-04-23 19:54:58,4.82,0.67,3.229,16.13,Normal Operation,Normal
+2026-04-23 19:54:58,5.0,0.65,3.25,18.77,Normal Operation,Normal
+2026-04-23 19:54:59,4.86,0.14,0.68,11.4,WARNING: Unexpected Power Drop Detected!,Power Mismatch
+2026-04-23 19:55:00,4.86,0.62,3.013,15.94,Normal Operation,Normal
+2026-04-23 19:55:00,4.92,0.68,3.346,15.38,Normal Operation,Normal
+2026-04-23 19:55:01,4.81,0.23,1.106,10.83,Normal Operation,Normal
+2026-04-23 19:55:01,5.01,0.21,1.052,92.96,WARNING: Magnetic Interference Detected! Field: 92.96 G,Magnetic Tamper
+2026-04-23 19:55:02,5.14,0.25,1.285,13.17,Normal Operation,Normal
+2026-04-23 19:55:03,5.14,-0.64,-3.29,16.8,WARNING: Reverse Power Flow Detected! Current: -0.64 A,Reverse Flow
+2026-04-23 19:55:03,4.83,0.37,1.787,15.19,Normal Operation,Normal
+2026-04-23 19:55:04,4.87,0.47,2.289,10.37,Normal Operation,Normal
+2026-04-23 19:55:04,4.98,0.13,0.647,17.55,Normal Operation,Normal
+2026-04-23 19:55:05,4.88,0.46,2.245,17.63,Normal Operation,Normal
+2026-04-23 19:55:05,5.04,0.0,0.0,19.18,"WARNING: Possible Bypass! Voltage: 5.04 V, Current: 0.00 A",Bypass Detected
+2026-04-23 19:55:06,5.05,0.37,1.868,12.04,Normal Operation,Normal
+2026-04-23 19:55:07,5.19,0.0,0.0,16.03,"WARNING: Possible Bypass! Voltage: 5.19 V, Current: 0.00 A",Bypass Detected
+2026-04-23 19:55:07,5.11,0.56,2.862,11.9,Normal Operation,Normal
+2026-04-23 19:55:08,4.86,0.12,0.583,15.21,Normal Operation,Normal
+2026-04-23 19:55:08,5.19,4.73,24.549,16.15,WARNING: High Current Draw Detected! Current: 4.73 A,Overload Detected
+2026-04-23 19:55:09,5.01,-0.67,-3.357,12.76,WARNING: Reverse Power Flow Detected! Current: -0.67 A,Reverse Flow
+2026-04-23 19:55:10,4.96,0.35,1.736,15.99,Normal Operation,Normal
+2026-04-23 19:55:10,5.13,2.46,12.62,16.22,WARNING: High Current Draw Detected! Current: 2.46 A,Overload Detected
+2026-04-23 19:55:11,2.38,0.47,1.119,15.78,WARNING: Critical Voltage Drop! Voltage: 2.38 V,Voltage Tamper
+2026-04-23 19:55:11,4.96,0.59,2.926,19.02,Normal Operation,Normal
+2026-04-23 19:55:12,5.18,-0.84,-4.351,10.89,WARNING: Reverse Power Flow Detected! Current: -0.84 A,Reverse Flow

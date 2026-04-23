@@ -16,9 +16,9 @@ class SerialReader:
                     self.ser = serial.serial_for_url(port, timeout=1)
                 else:
                     self.ser = serial.Serial(port, baudrate, timeout=1)
-                print(f"✅ Connected to {port} at {baudrate} baud")
+                print(f"Connected to {port} at {baudrate} baud")
             except Exception as e:
-                print(f"⚠️ Could not open serial port {port}: {e}")
+                print(f"Could not open serial port {port}: {e}")
                 self.ser = None
                 self.mock_mode = False  # remain in non-mock mode until user chooses mock
 
@@ -31,10 +31,10 @@ class SerialReader:
                 self.ser = serial.serial_for_url(self.port, timeout=1)
             else:
                 self.ser = serial.Serial(self.port, self.baudrate, timeout=1)
-            print(f"✅ Connected to {self.port} at {self.baudrate} baud")
+            print(f"Connected to {self.port} at {self.baudrate} baud")
             return True
         except Exception as e:
-            print(f"⚠️ Failed to connect to {self.port}: {e}")
+            print(f"Failed to connect to {self.port}: {e}")
             self.ser = None
             return False
 
@@ -83,7 +83,7 @@ class SerialReader:
                 }
 
             except Exception as e:
-                print(f"⚠️ Error parsing data: {e}")
+                print(f"Error parsing data: {e}")
                 return None
 
         return None
@@ -133,4 +133,4 @@ class SerialReader:
         """Close serial connection"""
         if self.ser and self.ser.is_open:
             self.ser.close()
-            print("🔌 Serial port closed.")
+            print("Serial port closed.")

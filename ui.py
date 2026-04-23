@@ -49,7 +49,7 @@ class TamperUI:
 
         # Initialize components
         self.reader = SerialReader(port="COM4", baudrate=9600, mock_mode=False)
-        self.logger = DataLogger("logs/tamper_log.csv")
+        self.logger = DataLogger("log_history/tamper_log.csv")
         self.detector = TamperDetector()
 
         # Data containers
@@ -170,11 +170,9 @@ class TamperUI:
             event_with_time = f"{timestamp} - {event}"
             self.event_history.append(event_with_time)
 
-            # Update event list if it exists
-            if hasattr(self, 'event_list'):
-                self.event_list.insert("", "end", values=(timestamp, event))
+            # Note: self.tree is updated in update_readings for all events
         except Exception as e:
-            print(f"Error adding event to log: {e}")
+            print(f"Error adding event to history: {e}")
 
     def update_graphs(self):
         """Update all graph plots with new data"""
@@ -344,14 +342,21 @@ class TamperUI:
         )
         self.status_label.pack(side="left", padx=5)
 
-        # Main container with modern grid layout
+        # Main container with modern layout
         main_container = ctk.CTkFrame(self.root, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=15, pady=15)
 
-        # Single large panel for graphs
+        # Left Panel - Readings & Controls
+        left_panel = ctk.CTkFrame(
+            main_container, width=320, fg_color=COLORS["card"], corner_radius=15)
+        left_panel.pack(side="left", fill="y", padx=(0, 15))
+        left_panel.pack_propagate(False)  # Maintain width
+        self.create_left_panel(left_panel)
+
+        # Right Panel - Graphs
         graphs_panel = ctk.CTkFrame(
             main_container, fg_color=COLORS["card"], corner_radius=15)
-        graphs_panel.pack(fill="both", expand=True)
+        graphs_panel.pack(side="right", fill="both", expand=True)
 
         self.create_right_panel(graphs_panel)
 
@@ -1035,9 +1040,7 @@ class TamperUI:
             if event_type != "Normal":
                 self.add_event_to_log(event_message)
 
-            # Update graphs
-            if hasattr(self, 'update_graphs'):
-                self.update_graphs()
+            # Note: Graphs are updated automatically by FuncAnimation in create_graph
 
             # Update statistics periodically (every 5 readings to avoid overhead)
             if len(self.voltage_data) % 5 == 0:
