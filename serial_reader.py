@@ -70,7 +70,7 @@ class SerialReader:
                 power = round(voltage * current, 3)
 
                 # double-check tamper based on thresholds
-                if voltage < 2.7 and tamper_type == "Normal":
+                if voltage < 2.5 and tamper_type == "Normal":
                     tamper_type = "Voltage Tamper"
 
                 return {
@@ -89,41 +89,35 @@ class SerialReader:
         return None
 
     def _generate_mock_data(self):
-        """Generate realistic low-voltage mock data for testing"""
-        voltage = 5.0 + random.uniform(-0.2, 0.2)
-        current = 0.4 + random.uniform(-0.3, 0.3)
-        magnetic_field = 15.0 + random.uniform(-5.0, 5.0)
+        """Generate controlled mock data based on project constraints"""
+
+        # Default normal values
+        voltage = 2.8
+        current = round(random.uniform(0.9, 1.0), 2)
+        magnetic_field = round(15.0 + random.uniform(-1.0, 1.0), 2)
         tamper_type = "Normal"
 
         # Random tamper events
         if random.random() < 0.25:  # 25% tamper chance
             event = random.choice(
-                ["magnetic", "bypass", "overload", "voltage", "reverse"])
-            if event == "magnetic":
+                ["bypass", "voltage", "magnetic"])
+            if event == "bypass":
+                current = 0.0
+                tamper_type = "Bypass Tamper"
+            elif event == "voltage":
+                voltage = random.uniform(1.8, 2.4)
+                tamper_type = "Voltage Tamper"
+            elif event == "magnetic":
                 magnetic_field = random.uniform(60.0, 100.0)
                 tamper_type = "Magnetic Tamper"
-            elif event == "bypass":
-                current = random.uniform(0.0, 0.02)
-                tamper_type = "Bypass Tamper"
-            elif event == "overload":
-                current = random.uniform(2.0, 5.0)
-                tamper_type = "Overload Tamper"
-            elif event == "voltage":
-                voltage = random.uniform(1.8, 2.6)
-                tamper_type = "Voltage Tamper"
-            elif event == "reverse":
-                current = -1.0 * random.uniform(0.2, 1.0)
-                tamper_type = "Reverse Flow Tamper"
 
-        if voltage < 2.7:
-            tamper_type = "Voltage Tamper"
-
+        # --- Derived power ---
         power = round(voltage * current, 3)
 
         return {
-            "voltage": round(voltage, 2),
-            "current": round(current, 2),
-            "magnetic_field": round(magnetic_field, 2),
+            "voltage": voltage,
+            "current": current,
+            "magnetic_field": magnetic_field,
             "power": power,
             "tamper_type": tamper_type,
             "timestamp": time.time()

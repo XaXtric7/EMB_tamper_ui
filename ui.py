@@ -322,10 +322,10 @@ class TamperUI:
         )
         self.settings_btn.pack(side="left", padx=(0, 10))
 
-        # Status indicator with improved styling
+        # Status indicator (initialized but not packed to hide from UI)
         self.status_frame = ctk.CTkFrame(
             header_controls, fg_color="transparent")
-        self.status_frame.pack(side="left", padx=5)
+        # self.status_frame.pack(side="left", padx=5)
 
         self.status_indicator = ctk.CTkLabel(
             self.status_frame,
@@ -333,14 +333,14 @@ class TamperUI:
             font=ctk.CTkFont(size=20),
             text_color="gray"
         )
-        self.status_indicator.pack(side="left", padx=5)
+        # self.status_indicator.pack(side="left", padx=5)
 
         self.status_label = ctk.CTkLabel(
             self.status_frame,
             text="Disconnected",
             font=ctk.CTkFont(size=16)
         )
-        self.status_label.pack(side="left", padx=5)
+        # self.status_label.pack(side="left", padx=5)
 
         # Main container with modern layout
         main_container = ctk.CTkFrame(self.root, fg_color="transparent")
@@ -378,125 +378,14 @@ class TamperUI:
             pass
 
     def create_left_panel(self, parent):
-        """Create left panel with current readings and controls"""
-        # Title with icon
-        title_frame = ctk.CTkFrame(parent, fg_color="transparent")
-        title_frame.pack(fill="x", pady=(20, 10), padx=20)
-
-        title = ctk.CTkLabel(
-            title_frame,
-            text="Real-Time Sensor Readings",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color=COLORS["text"]
-        )
-        title.pack(side="left")
-
-        # Refresh button
-        refresh_btn = ctk.CTkButton(
-            title_frame,
-            text="↻",
-            width=30,
-            height=30,
-            command=self.refresh_data,
-            fg_color=COLORS["primary"],
-            hover_color="#1976D2"
-        )
-        refresh_btn.pack(side="right")
-
+        """Create left panel with ONLY voltage and current readings"""
         # Voltage reading with improved styling
         self.create_reading_card(
-            parent, "Voltage", "0.0", "V", "voltage_label", COLORS["primary"])
+            parent, "Voltage", "0.0", "V", "voltage_label", COLORS["success"])
 
         # Current reading
         self.create_reading_card(
-            parent, "Current", "0.0", "A", "current_label", COLORS["success"])
-
-        # Power reading
-        self.create_reading_card(
-            parent, "Power", "0.0", "W", "power_label", COLORS["warning"])
-
-        # Magnetic Field reading
-        self.create_reading_card(
-            parent, "Magnetic Field", "0.0", "G", "magnetic_label", COLORS["secondary"])
-
-        # Event Status Card with improved styling
-        event_card = ctk.CTkFrame(
-            parent, corner_radius=15, fg_color=COLORS["card"], border_width=1, border_color=COLORS["border"])
-        event_card.pack(fill="x", padx=20, pady=10)
-
-        event_title = ctk.CTkLabel(
-            event_card,
-            text="Tamper Status",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color=COLORS["text"]
-        )
-        event_title.pack(pady=(15, 5))
-
-        self.event_status_label = ctk.CTkLabel(
-            event_card,
-            text="Normal Operation",
-            font=ctk.CTkFont(size=14),
-            text_color=COLORS["success"]
-        )
-        self.event_status_label.pack(pady=(0, 15))
-
-        # Control Buttons with improved styling
-        controls_frame = ctk.CTkFrame(parent, fg_color="transparent")
-        controls_frame.pack(fill="x", padx=20, pady=10)
-
-        # Button row 1
-        btn_row1 = ctk.CTkFrame(controls_frame, fg_color="transparent")
-        btn_row1.pack(fill="x", pady=5)
-
-        self.start_btn = ctk.CTkButton(
-            btn_row1,
-            text="▶ Start Monitoring",
-            command=self.start_monitoring,
-            font=ctk.CTkFont(size=14, weight="bold"),
-            height=40,
-            fg_color=COLORS["success"],
-            hover_color="#388E3C"
-        )
-        self.start_btn.pack(side="left", fill="x", expand=True, padx=(0, 5))
-
-        self.stop_btn = ctk.CTkButton(
-            btn_row1,
-            text="⏹ Stop",
-            command=self.stop_monitoring,
-            font=ctk.CTkFont(size=14, weight="bold"),
-            height=40,
-            fg_color=COLORS["danger"],
-            hover_color="#C62828",
-            state="disabled"
-        )
-        self.stop_btn.pack(side="right", fill="x", expand=True, padx=(5, 0))
-
-        # Button row 2
-        btn_row2 = ctk.CTkFrame(controls_frame, fg_color="transparent")
-        btn_row2.pack(fill="x", pady=5)
-
-        self.export_btn = ctk.CTkButton(
-            btn_row2,
-            text="📊 Export to Excel",
-            command=self.export_to_excel,
-            font=ctk.CTkFont(size=14),
-            height=35,
-            fg_color=COLORS["primary"],
-            hover_color="#1976D2"
-        )
-        self.export_btn.pack(side="left", fill="x", expand=True, padx=(0, 5))
-
-        self.settings_btn = ctk.CTkButton(
-            btn_row2,
-            text="⚙️ Settings",
-            command=self.show_settings,
-            font=ctk.CTkFont(size=14),
-            height=35,
-            fg_color=COLORS["secondary"],
-            hover_color="#6A1B9A"
-        )
-        self.settings_btn.pack(side="right", fill="x",
-                               expand=True, padx=(5, 0))
+            parent, "Current", "0.0", "A", "current_label", COLORS["primary"])
 
     def create_reading_card(self, parent, label, value, unit, attr_name, accent_color=None):
         """Create a sensor reading card with improved styling"""
@@ -543,17 +432,17 @@ class TamperUI:
         notebook = ctk.CTkTabview(parent)
         notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Voltage & Current Tab
-        tab1 = notebook.add("Voltage & Current")
-        self.create_graph(tab1, "Voltage (V)", "Current (A)",
-                          ["voltage_data", "current_data"],
-                          ["#4CAF50", "#2196F3"])
+        # Voltage Tab
+        tab1 = notebook.add("Voltage")
+        self.create_graph(tab1, "Voltage (V)", None,
+                          ["voltage_data"],
+                          ["#4CAF50"])
 
-        # Power Tab
-        tab2 = notebook.add("Power")
-        self.create_graph(tab2, "Power (W)", None,
-                          ["power_data"],
-                          ["#FF9800"])
+        # Current Tab
+        tab2 = notebook.add("Current")
+        self.create_graph(tab2, "Current (A)", None,
+                          ["current_data"],
+                          ["#2196F3"])
 
         # Magnetic Field Tab
         tab3 = notebook.add("Magnetic Field")
@@ -712,8 +601,8 @@ class TamperUI:
         # Treeview
         self.tree = ttk.Treeview(
             tree_frame,
-            columns=("Time", "Voltage", "Current", "Power",
-                     "Mag Field", "Event", "Type"),
+            columns=("Time", "Voltage", "Current",
+                     "Event", "Type"),
             show="headings",
             yscrollcommand=scrollbar_y.set
         )
@@ -724,16 +613,12 @@ class TamperUI:
         self.tree.heading("Time", text="Timestamp")
         self.tree.heading("Voltage", text="Voltage (V)")
         self.tree.heading("Current", text="Current (A)")
-        self.tree.heading("Power", text="Power (W)")
-        self.tree.heading("Mag Field", text="Mag Field (G)")
         self.tree.heading("Event", text="Event")
         self.tree.heading("Type", text="Type")
 
         self.tree.column("Time", width=150)
         self.tree.column("Voltage", width=100)
         self.tree.column("Current", width=100)
-        self.tree.column("Power", width=100)
-        self.tree.column("Mag Field", width=120)
         self.tree.column("Event", width=250)
         self.tree.column("Type", width=150)
 
@@ -780,7 +665,7 @@ class TamperUI:
                                 tag = 'normal'
 
                             self.tree.insert("", "end", values=(
-                                timestamp, voltage, current, power, mag_field,
+                                timestamp, voltage, current,
                                 event[:40] +
                                 "..." if len(event) > 40 else event,
                                 event_type
@@ -1025,8 +910,6 @@ class TamperUI:
                     timestamp,
                     f"{data['voltage']:.2f}",
                     f"{data['current']:.2f}",
-                    f"{power:.2f}",
-                    f"{data['magnetic_field']:.2f}",
                     event_message[:40] +
                     "..." if len(event_message) > 40 else event_message,
                     event_type

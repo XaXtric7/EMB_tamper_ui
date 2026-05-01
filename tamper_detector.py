@@ -7,10 +7,10 @@ Analyzes low-voltage sensor readings to detect various types of tampering events
 
 class TamperDetector:
     def __init__(self):
-        # Thresholds tuned for ~5 V DC system
-        self.voltage_normal_min = 4.7      # LM7805 output lower bound
-        self.voltage_normal_max = 5.2      # Upper tolerance
-        self.voltage_tamper_threshold = 2.7  # Critical low voltage
+        # Thresholds tuned for ~2.8 V DC system
+        self.voltage_normal_min = 2.5      # Lower bound for normal operation
+        self.voltage_normal_max = 3.0      # Upper tolerance
+        self.voltage_tamper_threshold = 2.5  # Critical low voltage
 
         self.current_min = 0.05            # Expected min load current (A)
         # High current limit (ACS712 5A module)
@@ -40,31 +40,19 @@ class TamperDetector:
             event_message = f"WARNING: Magnetic Interference Detected! Field: {magnetic_field:.2f} G"
             severity = "critical"
 
-        # --- 2. Reverse current flow ---
-        elif current < self.reverse_threshold:
-            event_type = "Reverse Flow"
-            event_message = f"WARNING: Reverse Power Flow Detected! Current: {current:.2f} A"
-            severity = "warning"
-
-        # --- 3. Bypass (no current, but voltage present) ---
-        elif voltage >= 4.5 and current < self.current_min:
+        # --- 2. Bypass (zero current) ---
+        if current == 0.0:
             event_type = "Bypass Detected"
-            event_message = f"WARNING: Possible Bypass! Voltage: {voltage:.2f} V, Current: {current:.2f} A"
+            event_message = f"WARNING: Zero Current Detected (Bypass)!"
             severity = "critical"
 
-        # --- 4. Overload condition ---
-        elif current > self.overload_threshold:
-            event_type = "Overload Detected"
-            event_message = f"WARNING: High Current Draw Detected! Current: {current:.2f} A"
-            severity = "warning"
-
-        # --- 5. Voltage tamper (below 2.7 V) ---
+        # --- 3. Voltage tamper (below 2.5 V) ---
         elif voltage < self.voltage_tamper_threshold:
             event_type = "Voltage Tamper"
-            event_message = f"WARNING: Critical Voltage Drop! Voltage: {voltage:.2f} V"
+            event_message = f"CRITICAL: Voltage Tamper Detected! Voltage: {voltage:.2f} V"
             severity = "critical"
 
-        # --- 6. Voltage anomaly (minor deviation) ---
+        # --- 4. Voltage anomaly (minor deviation from 2.8V) ---
         elif voltage < self.voltage_normal_min or voltage > self.voltage_normal_max:
             event_type = "Voltage Anomaly"
             event_message = f"WARNING: Voltage Out of Normal Range: {voltage:.2f} V"

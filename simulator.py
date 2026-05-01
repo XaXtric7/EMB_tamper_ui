@@ -9,39 +9,39 @@ def generate_reading(tamper_probability: float) -> tuple[float, float, float, st
     Generate one reading (voltage, current, magnetic_field, tamper_status).
 
     Tamper scenarios:
-    - Magnetic tamper: magnetic_field spike ~ 60–100 G
-    - Bypass: current near 0 A
+    - Bypass/Zero Current: current = 0 A
     - Overload: current high 2–5 A
-    - Voltage tamper: voltage < 2.7 V
-    - Reverse flow: negative current (-0.2 to -1.0 A)
+    - Voltage tamper: voltage < 2.5 V
     """
-    voltage = 5.0 + random.uniform(-0.2, 0.2)  # stable 5V system
-    current = 0.4 + random.uniform(-0.3, 0.3)  # normal load current (ACS712)
-    mag = 15.0 + random.uniform(-5.0, 5.0)     # background magnetic field
+    voltage = 2.8 + random.uniform(-0.05, 0.05)  # stable 2.8V system
+    current = 0.9 + random.uniform(0.0, 0.1)    # normal 0.9-1.0A current
+    mag = 15.0 + random.uniform(-2.0, 2.0)      # background magnetic field
     tamper_type = "Normal"
 
     if random.random() < tamper_probability:
         case = random.choice(
-            ["magnetic", "bypass", "overload", "voltage", "reverse"])
-        if case == "magnetic":
+            ["bypass", "voltage", "magnetic"])
+        if case == "bypass":
+            current = 0.0
+            tamper_type = "Bypass Tamper"
+        elif case == "voltage":
+            voltage = random.uniform(1.8, 2.4)
+            tamper_type = "Voltage Tamper"
+        elif case == "magnetic":
             mag = random.uniform(60.0, 100.0)
             tamper_type = "Magnetic Tamper"
-        elif case == "bypass":
-            current = random.uniform(0.0, 0.02)
-            tamper_type = "Bypass Tamper"
-        elif case == "overload":
-            current = random.uniform(2.0, 5.0)
-            tamper_type = "Overload Tamper"
-        elif case == "voltage":
-            voltage = random.uniform(1.8, 2.6)
-            tamper_type = "Voltage Tamper"
-        elif case == "reverse":
-            current = -1.0 * random.uniform(0.2, 1.0)
-            tamper_type = "Reverse Flow Tamper"
 
-    # Also check live if voltage drops below 2.7V
-    if voltage < 2.7:
+    # Also check live if voltage drops below 2.5V
+    if voltage < 2.5:
         tamper_type = "Voltage Tamper"
+
+    # Check if current is zero
+    if current == 0.0:
+        tamper_type = "Bypass Tamper"
+
+    # Check if magnetic field is high
+    if mag >= 50.0:
+        tamper_type = "Magnetic Tamper"
 
     return round(voltage, 2), round(current, 2), round(mag, 2), tamper_type
 
