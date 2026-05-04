@@ -90,52 +90,62 @@ class SerialReader:
 
     def _generate_mock_data(self):
         """Generate realistic low-voltage mock data for testing"""
-        # Check remote power status
-        if os.path.exists("power_state.txt"):
-            with open("power_state.txt", "r") as f:
-                status = f.read().strip()
-                if status == "OFF":
-                    return {
-                        'voltage': 0.0,
-                        'current': 0.0,
-                        'magnetic_field': 0.0,
-                        'power': 0.0,
-                        'timestamp': time.strftime('%H:%M:%S'),
-                        'tamper_type': 'Power Cut'
-                    }
-                elif status == "STABLE":
-                    voltage = 2.7 + random.uniform(0.0, 0.1)
-                    current = 0.9 + random.uniform(0.0, 0.1)
-                    return {
-                        'voltage': round(voltage, 2),
-                        'current': round(current, 2),
-                        'magnetic_field': 15.0,
-                        'power': round(voltage * current, 3),
-                        'timestamp': time.strftime('%H:%M:%S'),
-                        'tamper_type': 'Normal (Stable)'
-                    }
+        # Check remote states from JSON
+        power_status = "ON"
+        magnet_status = "ON"
+        if os.path.exists("power_state.json"):
+            try:
+                with open("power_state.json", "r") as f:
+                    states = json.load(f)
+                    power_status = states.get("power", "ON")
+                    magnet_status = states.get("magnet", "ON")
+            except:
+                pass
 
-        # Default normal values
-        voltage = 2.8
-        current = round(random.uniform(0.9, 1.0), 2)
-        magnetic_field = round(15.0 + random.uniform(-1.0, 1.0), 2)
+        # Default values
+        voltage = 2.8 + random.uniform(-0.05, 0.05)
+        current = 0.9 + random.uniform(0.0, 0.1)
+        magnetic_field = 15.0 + random.uniform(-2.0, 2.0)
         tamper_type = "Normal"
 
-        # Random tamper events
-        if random.random() < 0.25:  # 25% tamper chance
-            event = random.choice(
-                ["bypass", "voltage", "magnetic"])
-            if event == "bypass":
-                current = 0.0
-                tamper_type = "Bypass Tamper"
-            elif event == "voltage":
-                voltage = random.uniform(1.8, 2.4)
-                tamper_type = "Voltage Tamper"
-            elif event == "magnetic":
-                magnetic_field = random.uniform(60.0, 100.0)
-                tamper_type = "Magnetic Tamper"
+        # Apply Power Status
+        if power_status == "OFF":
+            voltage = 0.0
+            current = 0.0
+            tamper_type = "Power Cut"
+        elif power_status == "STABLE":
+            voltage = 2.7 + random.uniform(0.0, 0.1)
+            current = 0.9 + random.uniform(0.0, 0.1)
+            tamper_type = "Normal (Stable)"
 
-        # --- Derived power ---
+        # Apply Magnet Status independently
+        if magnet_status == "OFF":
+            magnetic_field = 0.0
+            if tamper_type == "Normal":
+                tamper_type = "Magnet Sensor Cut"
+
+        # Random tamper events only if both are ON
+        if power_status == "ON" and magnet_status == "ON":
+            if random.random() < 0.25:
+                event = random.choice(["bypass", "voltage", "magnetic"])
+                if event == "bypass":
+                    current = 0.0
+                    tamper_type = "Bypass Tamper"
+                elif event == "voltage":
+                    voltage = random.uniform(1.8, 2.4)
+                    tamper_type = "Voltage Tamper"
+                elif event == "magnetic":
+                    magnetic_field = random.uniform(60.0, 100.0)
+                    tamper_type = "Magnetic Tamper"
+
+        # Threshold checks
+        if voltage < 2.5 and power_status != "OFF":
+            tamper_type = "Voltage Tamper"
+        if current == 0.0 and power_status != "OFF":
+            tamper_type = "Bypass Tamper"
+        if magnetic_field >= 50.0:
+            tamper_type = "Magnetic Tamper"
+
         power = round(voltage * current, 3)
 
         return {

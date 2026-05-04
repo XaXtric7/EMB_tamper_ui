@@ -4,61 +4,68 @@ import random
 import argparse
 import os
 
-STATE_FILE = "power_state.txt"
+import json
 
-def get_power_status():
+STATE_FILE = "power_state.json"
+
+def get_remote_states():
     if not os.path.exists(STATE_FILE):
-        return "ON"
+        return {"power": "ON", "magnet": "ON"}
     try:
         with open(STATE_FILE, "r") as f:
-            return f.read().strip()
+            return json.load(f)
     except:
-        return "ON"
+        return {"power": "ON", "magnet": "ON"}
 
 def generate_reading(tamper_probability: float) -> tuple[float, float, float, str]:
     """
     Generate one reading (voltage, current, magnetic_field, tamper_status).
     """
-    power_status = get_power_status()
+    states = get_remote_states()
+    power_status = states.get("power", "ON")
+    magnet_status = states.get("magnet", "ON")
 
-    # Check remote power status
-    if power_status == "OFF":
-        return 0.0, 0.0, 0.0, "Power Cut"
-
-    # Check if STABLE mode is enabled
-    if power_status == "STABLE":
-        voltage = 2.7 + random.uniform(0.0, 0.1)  # 2.7 - 2.8V
-        current = 0.9 + random.uniform(0.0, 0.1)  # 0.9 - 1.0A
-        mag = 15.0 + random.uniform(-1.0, 1.0)
-        return round(voltage, 2), round(current, 2), round(mag, 2), "Normal (Stable)"
-
-    voltage = 2.8 + random.uniform(-0.05, 0.05)  # stable 2.8V system
-    current = 0.9 + random.uniform(0.0, 0.1)    # normal 0.9-1.0A current
-    mag = 15.0 + random.uniform(-2.0, 2.0)      # background magnetic field
+    # Initial default values
+    voltage = 2.8 + random.uniform(-0.05, 0.05)
+    current = 0.9 + random.uniform(0.0, 0.1)
+    mag = 15.0 + random.uniform(-2.0, 2.0)
     tamper_type = "Normal"
 
-    if random.random() < tamper_probability:
-        case = random.choice(
-            ["bypass", "voltage", "magnetic"])
-        if case == "bypass":
-            current = 0.0
-            tamper_type = "Bypass Tamper"
-        elif case == "voltage":
-            voltage = random.uniform(1.8, 2.4)
-            tamper_type = "Voltage Tamper"
-        elif case == "magnetic":
-            mag = random.uniform(60.0, 100.0)
-            tamper_type = "Magnetic Tamper"
+    # Handle Voltage/Current based on power_status
+    if power_status == "OFF":
+        voltage = 0.0
+        current = 0.0
+        tamper_type = "Power Cut"
+    elif power_status == "STABLE":
+        voltage = 2.7 + random.uniform(0.0, 0.1)
+        current = 0.9 + random.uniform(0.0, 0.1)
+        tamper_type = "Normal (Stable)"
 
-    # Also check live if voltage drops below 2.5V
-    if voltage < 2.5:
+    # Handle Magnet independently
+    if magnet_status == "OFF":
+        mag = 0.0
+        if tamper_type == "Normal":
+            tamper_type = "Magnet Sensor Cut"
+
+    # Only perform random tampering if in Normal Power Mode and Magnet is ON
+    if power_status == "ON" and magnet_status == "ON":
+        if random.random() < tamper_probability:
+            case = random.choice(["bypass", "voltage", "magnetic"])
+            if case == "bypass":
+                current = 0.0
+                tamper_type = "Bypass Tamper"
+            elif case == "voltage":
+                voltage = random.uniform(1.8, 2.4)
+                tamper_type = "Voltage Tamper"
+            elif case == "magnetic":
+                mag = random.uniform(60.0, 100.0)
+                tamper_type = "Magnetic Tamper"
+
+    # Final live checks
+    if voltage < 2.5 and power_status != "OFF":
         tamper_type = "Voltage Tamper"
-
-    # Check if current is zero
-    if current == 0.0:
+    if current == 0.0 and power_status != "OFF":
         tamper_type = "Bypass Tamper"
-
-    # Check if magnetic field is high
     if mag >= 50.0:
         tamper_type = "Magnetic Tamper"
 
