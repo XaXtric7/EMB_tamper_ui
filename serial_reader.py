@@ -89,7 +89,31 @@ class SerialReader:
         return None
 
     def _generate_mock_data(self):
-        """Generate controlled mock data based on project constraints"""
+        """Generate realistic low-voltage mock data for testing"""
+        # Check remote power status
+        if os.path.exists("power_state.txt"):
+            with open("power_state.txt", "r") as f:
+                status = f.read().strip()
+                if status == "OFF":
+                    return {
+                        'voltage': 0.0,
+                        'current': 0.0,
+                        'magnetic_field': 0.0,
+                        'power': 0.0,
+                        'timestamp': time.strftime('%H:%M:%S'),
+                        'tamper_type': 'Power Cut'
+                    }
+                elif status == "STABLE":
+                    voltage = 2.7 + random.uniform(0.0, 0.1)
+                    current = 0.9 + random.uniform(0.0, 0.1)
+                    return {
+                        'voltage': round(voltage, 2),
+                        'current': round(current, 2),
+                        'magnetic_field': 15.0,
+                        'power': round(voltage * current, 3),
+                        'timestamp': time.strftime('%H:%M:%S'),
+                        'tamper_type': 'Normal (Stable)'
+                    }
 
         # Default normal values
         voltage = 2.8

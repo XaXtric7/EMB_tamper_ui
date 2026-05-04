@@ -2,17 +2,36 @@ import socket
 import time
 import random
 import argparse
+import os
 
+STATE_FILE = "power_state.txt"
+
+def get_power_status():
+    if not os.path.exists(STATE_FILE):
+        return "ON"
+    try:
+        with open(STATE_FILE, "r") as f:
+            return f.read().strip()
+    except:
+        return "ON"
 
 def generate_reading(tamper_probability: float) -> tuple[float, float, float, str]:
     """
     Generate one reading (voltage, current, magnetic_field, tamper_status).
-
-    Tamper scenarios:
-    - Bypass/Zero Current: current = 0 A
-    - Overload: current high 2–5 A
-    - Voltage tamper: voltage < 2.5 V
     """
+    power_status = get_power_status()
+
+    # Check remote power status
+    if power_status == "OFF":
+        return 0.0, 0.0, 0.0, "Power Cut"
+
+    # Check if STABLE mode is enabled
+    if power_status == "STABLE":
+        voltage = 2.7 + random.uniform(0.0, 0.1)  # 2.7 - 2.8V
+        current = 0.9 + random.uniform(0.0, 0.1)  # 0.9 - 1.0A
+        mag = 15.0 + random.uniform(-1.0, 1.0)
+        return round(voltage, 2), round(current, 2), round(mag, 2), "Normal (Stable)"
+
     voltage = 2.8 + random.uniform(-0.05, 0.05)  # stable 2.8V system
     current = 0.9 + random.uniform(0.0, 0.1)    # normal 0.9-1.0A current
     mag = 15.0 + random.uniform(-2.0, 2.0)      # background magnetic field
